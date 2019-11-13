@@ -87,7 +87,7 @@ class LogObject(BaseLogObject):
         if self.matching_content_type(result['headers']):
             if settings.CONTENT_JSON_ONLY:
                 try:
-                    result['content'] = json.loads(self.content)
+                    result['content'] = self.content
                 except (ValueError, AttributeError):
                     pass
             else:
