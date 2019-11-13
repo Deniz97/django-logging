@@ -46,6 +46,19 @@ class BaseLogObject(object):
 
         return result
 
+class SoapLogObject(object):
+    def __init__(self, log_message):
+        self.log_message = log_message
+
+    @property
+    def to_dict(self):
+        result = dict(
+            log_message=self.log_message,
+            duration=self.duration
+        )
+        if not settings.DEBUG:
+            result["raw"] = str(result)
+        return result
 
 class LogObject(BaseLogObject):
     def __init__(self, request, response, duration):
