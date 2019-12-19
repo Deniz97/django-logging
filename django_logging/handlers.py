@@ -30,12 +30,11 @@ def message_from_record(record):
     return message
 
 
-def send_to_elasticsearch(timestamp, level, message):
-    Thread(target=__send_to_es, args=(timestamp, level, message)).start()
+def send_to_elasticsearch(timestamp, level, message, index):
+    Thread(target=__send_to_es, args=(timestamp, level, message, index)).start()
 
 
-def __send_to_es(timestamp, level, message):
-    index = settings.ELASTICSEARCH_INDEX if 'index' not in message else message['index']
+def __send_to_es(timestamp, level, message, index):
     if settings.ELASTICSEARCH_ENABLED:
         conn = Elasticsearch(hosts=settings.ELASTICSEARCH_HOSTS,
                              use_ssl=settings.ELASTICSEARCH_SSL,
@@ -61,13 +60,13 @@ class DefaultFileHandler(RotatingFileHandler):
         if isinstance(record.msg, SqlLogObject):
             return
         super(DefaultFileHandler, self).emit(record)
-        message = self.format(record)
-        send_to_elasticsearch(int(record.created), record.levelname, message)
+        message, index = self.format(record)
+        send_to_elasticsearch(int(record.created), record.levelname, message, index)
 
     def format(self, record):
         created = int(record.created)
         message = message_from_record(record)
-        return json.dumps({record.levelname: {created: message}}, sort_keys=True)
+        return (json.dumps({record.levelname: {created: message}}, sort_keys=True), message.get('index', settings.ELASTICSEARCH_INDEX)
 
     def rotation_filename(self, default_name):
         return '{}-{}.gz'.format(default_name, time.strftime('%Y%m%d'))
