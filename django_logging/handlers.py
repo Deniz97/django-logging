@@ -36,7 +36,7 @@ def send_to_elasticsearch(timestamp, level, message):
 
 
 def __send_to_es(timestamp, level, message):
-    index = settings.ELASTICSEARCH_INDEX
+    index = settings.ELASTICSEARCH_INDEX if 'index' not in message else message['index']
     if settings.ELASTICSEARCH_ENABLED:
         conn = Elasticsearch(hosts=settings.ELASTICSEARCH_HOSTS,
                              use_ssl=settings.ELASTICSEARCH_SSL,
