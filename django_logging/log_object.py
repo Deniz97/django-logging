@@ -46,7 +46,7 @@ class BaseLogObject(object):
 
         return result
 
-class SoapLogObject(object):
+class CustomLogObject(object):
     def __init__(self, log_message):
         self.log_message = log_message
 
