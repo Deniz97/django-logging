@@ -145,7 +145,8 @@ class ErrorLogObject(BaseLogObject):
         result = dict(
             message=str(exception),
             type=cls.exception_type(exception),
-            traceback=list()
+            traceback=list(),
+            index="sabe_exception_index"
         )
         if not settings.DEBUG:
             result["raw"] = str(exception)
