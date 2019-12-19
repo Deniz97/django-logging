@@ -15,11 +15,10 @@ from elasticsearch.exceptions import ConnectionError
 
 
 def message_from_record(record):
-    if isinstance(record.msg, dict) or isinstance(record.msg, str):
-        if settings.DEBUG:
-            message = record.msg
-        else:
-            message = dict(raw=record.msg)
+    if isinstance(record.msg, dict):
+        message = record.msg
+    elif isinstance(record.msg, str):
+        message = dict(raw=record.msg)
     elif isinstance(record.msg, Exception):
         message = ErrorLogObject.format_exception(record.msg)
     else:
