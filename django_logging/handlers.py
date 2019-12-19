@@ -66,7 +66,7 @@ class DefaultFileHandler(RotatingFileHandler):
     def format(self, record):
         created = int(record.created)
         message = message_from_record(record)
-        return (json.dumps({record.levelname: {created: message}}, sort_keys=True), message.get('index', settings.ELASTICSEARCH_INDEX)
+        return (json.dumps({record.levelname: {created: message}}, sort_keys=True), message.get('index', settings.ELASTICSEARCH_INDEX))
 
     def rotation_filename(self, default_name):
         return '{}-{}.gz'.format(default_name, time.strftime('%Y%m%d'))
