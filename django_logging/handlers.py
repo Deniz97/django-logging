@@ -60,13 +60,17 @@ class DefaultFileHandler(RotatingFileHandler):
         if isinstance(record.msg, SqlLogObject):
             return
         super(DefaultFileHandler, self).emit(record)
-        message, index = self.format(record)
+        ### dont mind me
+        message = message_from_record(record)
+        index = message.get('index', settings.ELASTICSEARCH_INDEX)
+        ###
+        message = self.format(record)
         send_to_elasticsearch(int(record.created), record.levelname, message, index)
 
     def format(self, record):
         created = int(record.created)
         message = message_from_record(record)
-        return (json.dumps({record.levelname: {created: message}}, sort_keys=True), message.get('index', settings.ELASTICSEARCH_INDEX))
+        return json.dumps({record.levelname: {created: message}}, sort_keys=True)
 
     def rotation_filename(self, default_name):
         return '{}-{}.gz'.format(default_name, time.strftime('%Y%m%d'))
